@@ -1,0 +1,9 @@
+{
+  "projectName": "stars",
+  "network": "testnet",
+  "packageId": "0xaaddbe04ba595ae9d6c33fba5b415bccb1f1dd93877fbb34701666f995a208ca",
+  "schemaId": "0xebd9d2f1fe339278f5334b485de8bf3ca87220f70d76a2e5570aa9f43e190971",
+  "schemas": {},
+  "upgradeCap": "0x492a17abe76b4bf724b78cc607440ccf4de00d523360ff85da4d67187257d7fb",
+  "version": 1
+}
