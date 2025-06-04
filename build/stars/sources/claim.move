@@ -35,6 +35,17 @@ public entry fun deposit(
     balance::join(&mut ledger.balance, amount);
 }
 
+
+public fun withdraw(
+    ledger: &mut ClaimedLedger,
+    ctx: &mut TxContext,
+) {
+    assert!(ctx.sender() == ADMIN, 1);
+    let balance = balance::withdraw_all(&mut ledger.balance);
+    let coin = coin::from_balance(balance, ctx);
+    sui::transfer::public_transfer(coin, ADMIN);
+}
+
 /// Claim STARS from the ledger
 public entry fun claim(
     ledger: &mut ClaimedLedger,
@@ -83,9 +94,13 @@ fun test_deposit() {
 
       scenario.next_tx(ADMIN);
       let mut ledger = test_scenario::take_shared<ClaimedLedger>(&scenario);
-      deposit(&mut ledger, stars0);
 
-      deposit(&mut ledger, stars1);
+      let ctx = scenario.ctx();
+      deposit(&mut ledger, stars0, ctx);
+      deposit(&mut ledger, stars1, ctx);
+      std::debug::print(&ledger);
+
+      withdraw(&mut ledger, ctx);
       std::debug::print(&ledger);
       test_scenario::return_shared<ClaimedLedger>(ledger);
 
@@ -113,10 +128,13 @@ public fun test_claim() {
       // let stars1 = coin::mint_for_testing<STARS>(100000, ctx);
       initialize(ctx);
 
-      scenario.next_tx(address);
+      scenario.next_tx(ADMIN);
       let mut ledger = test_scenario::take_shared<ClaimedLedger>(&scenario);
-      deposit(&mut ledger, stars0);
 
+      let ctx = scenario.ctx();
+      deposit(&mut ledger, stars0, ctx);
+
+      scenario.next_tx(address);
       let ctx = scenario.ctx();
       assert!(!is_claimed(&ledger, address), 1);
       claim(&mut ledger, address, amount, signature, ctx);
